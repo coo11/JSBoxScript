@@ -629,7 +629,7 @@ async function getTweetInfo(dat) {
   let quoted;
   if (dat.is_quote_status && qs /* 禁止套娃 */) quoted = await getTweetInfo(qs);
 
-  let u_url = `https://twitter.com/intent/user?user_id=${uid}`;
+  let u_url = `https://twitter.com/i/user=${uid}`;
   let url = `https://twitter.com/user/status/${id}`;
   date = new Date(date).toLocaleString();
   // Start to fix full text ↓
@@ -644,7 +644,7 @@ async function getTweetInfo(dat) {
           let f = a.slice(...b);
           let url;
           if (c) url = `https://twitter.com/hashtag/${encodeURI(c)}?src=hash`;
-          else if (d) url = `https://twitter.com/intent/user?user_id=${d}`;
+          else if (d) url = `https://twitter.com/i/user=${d}`;
           else if (e) {
             url = e;
             f = ["网页链接"];
