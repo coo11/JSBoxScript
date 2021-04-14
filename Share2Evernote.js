@@ -41,6 +41,12 @@ cookie 获取方法如下，任选其一：
 - 需配合 iOS 自带邮箱使用。提示附件过大时，请勿使用「邮包」选项。
 
 2020.9.22 版本 1.71 有问题请通过 Telegram 向[作者](https://t.me/coo11)反馈。
+
+2021.2.4 TODO
+- 添加保存 Twitter Card 媒体内容的功能。
+    https://twitter.com/KATETOKYO_PR/status/1356422084872781824
+- 使用 Twitter API 2.0
+2021-2.8 修复微博文章无法抓取的问题。
 */
 let link =
   $app.env == $env.safari
@@ -54,11 +60,11 @@ if (/https?:\/\/t\.cn\/\w+/.test(link)) link = await $http.lengthen(link);
 //Weibo web version on desktop may give you a shortened link
 
 const regex = [
-  /https?:\/\/(weibointl\.api\.)weibo.*?weibo_id=(\d+)/i,
+  /https?:\/\/((?:media|card)?\.?weibo\.c(?:n|om))\/t{0,2}article.*?(\d+)/,
+  /https?:\/\/(weibointl|share)\.api\.weibo.*?weibo_id=(\d+)/i,
   /https?:\/\/((?:m\.)?weibo\.c(?:n|om))\/tv\/v\/(\w+)/,
   /https?:\/\/((?:m\.)?weibo\.c(?:n|om))\/s\/video\/.*?blog_mid=(\w+)/,
   /https?:\/\/((?:m\.)?weibo\.c(?:n|om))\/\w+\/?(\w*)/,
-  /https?:\/\/((?:media|card)?\.?weibo\.c(?:n|om))\/t{0,2}article.*?(\d+)/,
   /https?:\/\/www\.zhihu\.com\/(?:question\/\d+\/)?answer\/(\d+)/,
   /https?:\/\/zhuanlan\.zhihu\.com\/p\/(\d+)/,
   /https?:\/\/(?:mobile\.)?twitter\.com\/(?:\w+|i\/web)\/status\/(\d{18,19})/
@@ -74,19 +80,19 @@ $ui.loading("获取内容中");
 
 switch (i) {
   case 0:
+    getData({
+      url: `https://card.weibo.com/article/m/aj/detail?id=${matched[2]}`,
+      handler: getWeiboArticle
+    });
+    break;
   case 1:
   case 2:
   case 3:
+  case 4:
     if (/\/(u|profile)\//.test(link)) return;
     getData({
       url: `https://m.weibo.cn/statuses/show?id=${matched[2]}`,
       handler: getWeiboInfo
-    });
-    break;
-  case 4:
-    getData({
-      url: `https://card.weibo.com/article/m/aj/detail?id=${matched[2]}`,
-      handler: getWeiboArticle
     });
     break;
   case 5:
@@ -407,6 +413,7 @@ async function getWeiboArticle(data) {
   let head = `<span style="color:#373B38;font-size:26px;line-height:36px;"><b>${title}</b></span><br><a href="${u_url}"style="text-decoration:none;color:#373B38;font-size:12px;line-height:14px;">${screen_name}</a><span style="color:#969695;font-size:12px;line-height:18px;"> ${update_at || create_at} </span><a href="${url}"style="text-decoration:none;color:#0EA54A;font-size:12px;line-height:18px;">查看原文</a><br><hr style="display:block;width:100%;height:1px;border:none;background-color:#0EA54A;margin:7px 0;"></hr>`;
 
   if (!v_num) {
+    $ui.loading(false);
     mail(`${title} - ${screen_name} 发布的头条文章`, head + main);
     return;
   }
@@ -446,6 +453,7 @@ async function getWeiboArticle(data) {
   }
 
   let dlSuccess = await dl();
+  $ui.loading(false);
   if (dlSuccess) {
     let media = [];
     for (let i in video) {
@@ -462,7 +470,7 @@ async function getWeiboArticle(data) {
 async function getZhihuInfo(data) {
   let { type, content, error, ...info } = data;
   if (error) {
-    $ui.alert({ title: error.name, message: error.message });
+    failure(error.message, error.name);
     return;
   }
   const { header, title } =
@@ -753,7 +761,10 @@ function mail(subject, body, media) {
   });
 }
 
-function failure(message = "可能是查看权限不足或者作者设置了展示时间") {
+function failure(
+  message = "可能是查看权限不足或者作者设置了展示时间",
+  title = "获取失败"
+) {
   $ui.loading(false);
-  $ui.alert({ title: "获取失败", message: message });
+  $ui.alert({ title, message });
 }
