@@ -2,8 +2,14 @@
 
 ## Share2Evernote
 
-> **版本 1.7**
-> [点此安装](https://xteko.com/redir?name=Share2Evernote&url=https%3A%2F%2Fgithub.com%2Fcoo11%2FJSBoxScript%2Fraw%2Fmaster%2FShare2Evernote.js&icon=icon_080.png&types=7&version=1.7&author=coo11)
+> **版本 1.7.4**
+> [点此安装](https://xteko.com/redir?name=Share2Evernote&url=https%3A%2F%2Fgithub.com%2Fcoo11%2FJSBoxScript%2Fraw%2Fmaster%2FShare2Evernote.js&icon=icon_080.png&types=7&version=1.7.4&author=coo11)
+
+**2022年2月20日更新**
+- 替换失效的 API 以解决知乎付费回答无法保存的问题。
+
+**2021年2月8日更新**
+- 修复微博文章无法抓取的问题。
 
 **2020年9月1日更新**
 - 修复知乎盐选会员无法获取付费内容的问题。

@@ -8,7 +8,7 @@ const justSaveMedia = false;
 const to = [""];
 
 /* 👇 填入知乎 cookie */
-const z_c0 = "";
+const z_c0 = '';
 
 /* 👇 引号内填入微博 cookie（推荐填写，否则会导致部分微博或微博头条文章无法获取或查看权限不足）*/
 const SUB = "";
@@ -40,13 +40,13 @@ cookie 获取方法如下，任选其一：
 - 能否保存微博头条文章内容取决于填入 Cookie 对应的账号是否有访问权限；
 - 需配合 iOS 自带邮箱使用。提示附件过大时，请勿使用「邮包」选项。
 
-2020.9.22 版本 1.71 有问题请通过 Telegram 向[作者](https://t.me/coo11)反馈。
-
-2021.2.4 TODO
+#### TODO
 - 添加保存 Twitter Card 媒体内容的功能。
     https://twitter.com/KATETOKYO_PR/status/1356422084872781824
 - 使用 Twitter API 2.0
+
 2021-2.8 修复微博文章无法抓取的问题。
+2022-2.20 版本 1.74 修复知乎付费回答无法保存的问题。有其它问题请通过 Telegram 向[作者](https://t.me/coo11)反馈。
 */
 let link =
   $app.env == $env.safari
@@ -97,7 +97,7 @@ switch (i) {
     break;
   case 5:
     getData({
-      url: `https://www.zhihu.com/api/v4/answers/${matched[1]}?include=content,paid_info,paid_info_content`,
+      url: `https://api.zhihu.com/v4/answers/${matched[1]}?include=content,paid_info,paid_info_content,author,created_time,updated_time,question`,
       header: { Cookie: `z_c0=${z_c0};` },
       handler: getZhihuInfo
     });
@@ -147,7 +147,6 @@ async function getData({
   handler
 }) {
   let { data } = await $http.get({ url, header });
-  console.log(data);
   handler.count = 0;
   handler(data);
 }
