@@ -2,10 +2,11 @@
 
 ## Share2Evernote
 
-> **版本 1.7.4**
+> **版本 1.75**
 > [点此安装](https://xteko.com/redir?name=Share2Evernote&url=https%3A%2F%2Fgithub.com%2Fcoo11%2FJSBoxScript%2Fraw%2Fmaster%2FShare2Evernote.js&icon=icon_080.png&types=7&version=1.7.4&author=coo11)
 
-**2022年2月20日更新**
+**2022年2月24日更新**
+- 修复知乎保存链接卡片时出现的 BUG。
 - 替换失效的 API 以解决知乎付费回答无法保存的问题。
 
 **2021年2月8日更新**

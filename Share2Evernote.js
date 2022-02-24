@@ -45,8 +45,11 @@ cookie 获取方法如下，任选其一：
     https://twitter.com/KATETOKYO_PR/status/1356422084872781824
 - 使用 Twitter API 2.0
 
+2020.9.22 版本 1.71 
 2021-2.8 修复微博文章无法抓取的问题。
-2022-2.20 版本 1.74 修复知乎付费回答无法保存的问题。有其它问题请通过 Telegram 向[作者](https://t.me/coo11)反馈。
+2022-2.20 版本 1.74 修复知乎付费回答无法保存的 BUG。
+2022-2.24 版本 1.75 修复知乎保存链接卡片时出现的 BUG。
+有其它问题请通过 Telegram 向[作者](https://t.me/coo11)反馈。
 */
 let link =
   $app.env == $env.safari
@@ -98,7 +101,7 @@ switch (i) {
   case 5:
     getData({
       url: `https://api.zhihu.com/v4/answers/${matched[1]}?include=content,paid_info,paid_info_content,author,created_time,updated_time,question`,
-      header: { Cookie: `z_c0=${z_c0};` },
+      header: { Cookie: `z_c0="${z_c0}";` },
       handler: getZhihuInfo
     });
     break;
@@ -502,6 +505,7 @@ async function getZhihuInfo(data) {
     let [, url, xxx, text] = x;
     url.includes("link.zhihu.com") &&
       (url = decodeURIComponent(url.slice(url.indexOf("=") + 1)));
+      //console.log([url, xxx, text])
     if (xxx.indexOf("link-card") > -1) {
       let img = xxx.match(/data-image="(.*?)"/);
       if (!img || img[1].endsWith("svg"))
@@ -509,7 +513,7 @@ async function getZhihuInfo(data) {
           "https://static.zhihu.com/heifetz/assets/apple-touch-icon-120.b3e6278d.png";
       else img = img[1];
       /^<span.*<\/span>$/.test(text) &&
-        (text = text.match(/LinkCard-title.*?>(.*?)<\/span>/)[1]);
+        (text = text.replace(/<\/?span(?:.*?visible")?>/g, ""));
       return `<p><a href="${url}"style="text-decoration:none;color:#0EA54A;"><b><font color="#1A7CD3">【卡片链接】</font>${text}</b><br/><img src="${img}" style="border-radius:10px;width:100px;"/></a></p>`;
     } else if (xxx.includes("data-video-id")) {
       let vid = xxx.match(/data-lens-id="(.*?)"/)[1];
